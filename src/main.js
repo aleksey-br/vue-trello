@@ -1,4 +1,11 @@
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createApp } from "vue";
+import { plugin as Slicksort } from "vue-slicksort";
+import App from "./App.vue";
 
-createApp(App).mount('#app')
+import "normalize.css";
+import "./styles/index.css";
+
+const app = createApp(App);
+
+app.use(Slicksort);
+app.mount("#app");
