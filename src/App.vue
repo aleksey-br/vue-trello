@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import TodoContainer from "@/components/Todos/TodoContainer.vue";
+import TodoContainer from "@/components/todos/TodoContainer.vue";
 </script>
 
 <style></style>

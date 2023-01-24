@@ -1,7 +1,7 @@
 <template>
   <SlickItem
     class="w-[380px] max-h-[700px] h-min flex flex-col mr-4 last:mr-0 bg-stone-200 bg-opacity-80 shadow-md rounded-md scroll-touch"
-    v-for="(colum, i) in columns"
+    v-for="(colum, i) in todosStore.todos"
     :key="colum.id"
     :index="i">
     <div class="relative h-full flex flex-col overflow-hidden">
@@ -27,7 +27,7 @@
         </DragHandle>
       </header>
       <SlickList
-        class="board flex flex-col gap-4 transition-all p-4 mb-16 overflow-y-auto"
+        class="board flex flex-col gap-4 transition-all p-4 overflow-y-auto"
         v-model:list="colum.items"
         axis="y"
         group="group"
@@ -40,36 +40,18 @@
           :index="i"
           :item="item" />
       </SlickList>
-      <footer class="bg-stone-200 absolute bottom-0 left-0 right-0">
-        <div
-          v-if="!isShowForm"
-          class="absolute w-full bottom-0 left-0 right-0 p-4">
-          <button
-            class="w-full px-4 py-2 bg-green-500 rounded-md text-center text-stone-50 shadow-md hover:bg-green-600 transition-colors duration-200"
-            @click="addTask">
-            Add task
-          </button>
-        </div>
-      </footer>
+      <TodoBoardFooter :col="colum.id" />
     </div>
   </SlickItem>
 </template>
 
 <script setup>
 import { SlickItem, DragHandle, SlickList } from "vue-slicksort";
-import { defineProps, ref } from "vue";
 import TodoCard from "./TodoCard.vue";
-// import TodoCreateTask from "./TodoCreateTask.vue";
+import TodoBoardFooter from "./TodoBoardFooter.vue";
+import { useTodosStore } from "@/store";
 
-const isShowForm = ref(false);
-const props = defineProps({
-  columns: Array,
-});
-
-const addTask = () => {
-  isShowForm.value = !isShowForm.value;
-  console.log("aaa");
-};
+const todosStore = useTodosStore();
 </script>
 
 <style lang="css" scoped>
