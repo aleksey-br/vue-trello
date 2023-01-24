@@ -1,7 +1,7 @@
 <template>
-  <footer class="bg-stone-200 p-4 rounded-md transition">
+  <footer class="bg-slate-200/10 p-4 rounded-md transition">
     <transition name="fade">
-      <div class="w-full bg-stone-200" v-if="isShowForm">
+      <div class="w-full bg-slate-200/10" v-if="isShowForm">
         <label class="block font-light text-sm mb-1" for="title">Title</label>
         <input
           class="block w-full py-1 px-2 outline-none text-gray-800 rounded-md mb-4"
@@ -25,7 +25,7 @@
       </div>
     </transition>
     <button
-      class="w-full px-4 py-2 bg-green-500 rounded-md text-center text-stone-50 shadow-md hover:bg-green-600 transition-colors duration-200"
+      class="w-full px-4 py-2 bg-green-600 rounded-md text-center text-stone-50 shadow-md hover:bg-green-700 transition-colors duration-200"
       @click="showForm">
       {{ isShowForm ? "Save" : "Add" }}
     </button>

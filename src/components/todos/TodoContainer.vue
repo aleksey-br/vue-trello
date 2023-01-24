@@ -35,7 +35,7 @@
     :transition-duration="500">
     <TodoBoard />
     <div
-      class="bg-stone-200 flex flex-shrink-0 px-4 py-2 text-2xl transition rounded-md relative min-h-[40px]">
+      class="bg-slate-200/60 hover:bg-slate-200/80 flex flex-shrink-0 px-4 py-2 text-2xl transition rounded-md relative">
       <input
         class="w-full outline-none px-2 py-1 rounded-md text-slate-800 font-md"
         v-model="boardName"
