@@ -1,11 +1,11 @@
 <template>
   <SlickItem
-    class="w-[380px] max-h-[700px] h-min flex flex-col mr-4 last:mr-0 bg-stone-200 bg-opacity-80 shadow-md rounded-md scroll-touch"
+    class="w-[380px] max-h-[700px] h-min flex flex-shrink-0 flex-col mr-4 last:mr-0 bg-stone-200 bg-opacity-80 shadow-md rounded-md scroll-touch"
     v-for="(colum, i) in todosStore.todos"
     :key="colum.id"
     :index="i">
     <div class="relative h-full flex flex-col overflow-hidden">
-      <header class="flex justify-between items-center mb-4 p-4">
+      <header class="flex justify-between items-center p-4">
         <span class="text-xl font-medium text-gray-700">{{ colum.name }}</span>
         <DragHandle class="cursor-grabbing">
           <svg

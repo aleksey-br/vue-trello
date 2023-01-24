@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 #app {
-  background: url("../assets/bg.jpg") 0 0 no-repeat;
+  background: url("../assets/bg.jpg") 0 50% no-repeat;
   background-size: cover;
 }
 

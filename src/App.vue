@@ -1,5 +1,5 @@
 <template>
-  <div class="w-fill h-screen p-2 md:p-6 overflow-y-hidden overflow-x-auto">
+  <div class="w-fill h-screen pl-4 pt-4 pr-4 pb-1">
     <TodoContainer />
   </div>
 </template>
