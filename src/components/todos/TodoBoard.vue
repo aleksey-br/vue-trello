@@ -1,10 +1,11 @@
 <template>
   <SlickItem
-    class="w-[380px] max-h-[640px] h-min flex flex-shrink-0 flex-col mr-4 last:mr-0 bg-slate-200/50 shadow-md rounded-md scroll-touch"
-    v-for="(colum, i) in todosStore.todos"
+    class="w-[380px] max-h-[640px] h-min flex flex-shrink-0 flex-col mr-4 last:mr-0 shadow-md rounded-md scroll-touch"
+    v-for="(colum, i) in todosStore.getData"
     :key="colum.id"
     :index="i">
-    <div class="relative h-full flex flex-col overflow-hidden">
+    <div
+      class="relative h-full flex flex-col overflow-hidden bg-slate-200/70 hover:bg-slate-200/80 transition">
       <header class="flex justify-between items-center p-4">
         <span class="text-xl font-medium text-gray-700">{{ colum.name }}</span>
         <DragHandle class="cursor-grabbing">

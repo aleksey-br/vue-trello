@@ -40,7 +40,7 @@ import { useTodosStore } from "@/store";
 
 const todosStore = useTodosStore();
 const props = defineProps({
-  col: Number,
+  col: String,
 });
 
 const isShowForm = ref(false);

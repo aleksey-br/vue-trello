@@ -1,24 +1,42 @@
 <template>
   <div
-    class="flex h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="w-full max-w-md space-y-8">
-      <form class="mt-8 space-y-6" action="#" method="POST">
-        <input type="hidden" name="remember" value="true" />
+    class="flex flex-col h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <h3 class="text-3xl font-bold text-slate-800">
+      {{ isRegistration ? "Registration" : "Authorization" }}
+    </h3>
+
+    <div class="w-full max-w-md space-y-8 mb-5">
+      <form class="mt-8 space-y-6" @submit.prevent>
         <div class="-space-y-px rounded-md shadow-sm">
+          <div v-if="isRegistration">
+            <label for="name" class="sr-only">Name</label>
+            <input
+              v-model="user.name"
+              id="name"
+              name="name"
+              type="text"
+              autocomplete="off"
+              required
+              class="relative block w-full appearance-none rounded-none rounded-t-md border border-gray-300 px-3 py-3 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm mb-2"
+              placeholder="Your name" />
+          </div>
           <div>
             <label for="email-address" class="sr-only">Email address</label>
             <input
+              v-model="user.email"
               id="email-address"
               name="email"
               type="email"
               autocomplete="off"
               required
-              class="relative block w-full appearance-none rounded-none rounded-t-md border border-gray-300 px-3 py-3 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm mb-2"
+              class="relative block w-full appearance-none rounded-none border border-gray-300 px-3 py-3 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm mb-2"
+              :class="{ 'rounded-t-md': !isRegistration }"
               placeholder="Email address" />
           </div>
           <div>
             <label for="password" class="sr-only">Password</label>
             <input
+              v-model="user.password"
               id="password"
               name="password"
               type="password"
@@ -31,7 +49,7 @@
 
         <div>
           <button
-            type="submit"
+            @click="submitForm"
             class="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none">
             <span class="absolute inset-y-0 left-0 flex items-center pl-3">
               <!-- Heroicon name: mini/lock-closed -->
@@ -52,9 +70,36 @@
         </div>
       </form>
     </div>
+    <div class="flex gap-4">
+      <button @click="isRegistration = false">Log in</button>
+      <button
+        @click="isRegistration = true"
+        class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-md">
+        Sing Up
+      </button>
+    </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { useAuthStore } from "@/store";
+import { ref } from "vue";
+
+const authStore = useAuthStore();
+const isRegistration = ref(false);
+const user = ref({
+  name: "",
+  email: "",
+  password: "",
+});
+
+const submitForm = () => {
+  if (isRegistration.value) {
+    authStore.register(user.value);
+  } else {
+    authStore.login(user.value);
+  }
+};
+</script>
 
 <style lang="scss" scoped></style>

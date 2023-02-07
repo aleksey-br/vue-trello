@@ -9,9 +9,11 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
+    "dotenv": "^16.0.3",
     "firebase": "^9.16.0",
     "normalize.css": "^8.0.1",
     "pinia": "^2.0.29",
+    "uuid": "^9.0.0",
     "vue": "^3.2.13",
     "vue-router": "^4.1.6",
     "vue-slicksort": "^2.0.3",

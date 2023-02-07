@@ -1,12 +1,18 @@
 <template>
-  <header class="h-14 bg-slate-200/80 fixed top-0 left-0 right-0">
-    <div class="container mx-auto px-4 h-full flex items-center">
-      <h3 class="text-3xl text-slate-800 font-extrabold">Vuello</h3>
-    </div>
-  </header>
+  <AppHeader />
   <router-view />
 </template>
 
-<script setup></script>
+<script setup>
+import { onMounted } from "vue";
+import AppHeader from "./components/AppHeader.vue";
+import { useTodosStore } from "./store";
+
+const todosStore = useTodosStore();
+
+onMounted(() => {
+  todosStore.getDataforFirestore();
+});
+</script>
 
 <style></style>

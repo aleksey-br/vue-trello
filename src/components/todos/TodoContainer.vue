@@ -1,8 +1,10 @@
 <template>
   <div
-    v-if="todosStore.getTodos.length === 0"
+    v-if="todosStore.boards.length === 0"
     class="w-full h-full flex items-center justify-center flex-col">
-    <h1 class="text-5xl font-bold text-slate-700 mb-3">Hello, Name 👋</h1>
+    <h1 class="text-5xl font-bold text-slate-700 mb-3">
+      Hello, {{ userName }} 👋
+    </h1>
     <h3 class="text-3xl font-semibold text-slate-700 mb-5">
       It's time for new challenges
     </h3>
@@ -13,13 +15,12 @@
       name="title"
       id="board-title"
       placeholder="Board name"
-      @keyup.enter="nameBoard"
       ref="input"
-      v-if="isInputShow" />
+      required />
+
     <button
-      @click="showInput"
-      v-if="!isInputShow"
-      class="px-20 py-3 bg-slate-600 rounded-md text-slate-100 font-medium text-lg hover:bg-slate-800 transition">
+      @click="nameBoard"
+      class="px-20 py-3 bg-blue-700 rounded-md text-slate-100 font-medium text-md hover:bg-slate-800 transition">
       Add board
     </button>
   </div>
@@ -28,7 +29,7 @@
     class="content flex h-full relative items-start overflow-y-hidden overflow-x-auto scroll-touch"
     axis="x"
     lockAxis="x"
-    v-model:list="todosStore.todos"
+    v-model:list="todosStore.boards"
     @sort-start="todosStore.startDragging"
     use-drag-handle
     :useWindowAsScrollContainer="false"
@@ -54,27 +55,28 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { SlickList } from "vue-slicksort";
 import TodoBoard from "@/components/todos/TodoBoard.vue";
-import { useTodosStore } from "@/store";
+import { useAuthStore, useTodosStore } from "@/store";
 
 const todosStore = useTodosStore();
 const boardName = ref("");
 const input = ref(null);
+const userName = ref("User");
 const isInputShow = ref(false);
-console.log(todosStore.getTodos.length);
+
+onMounted(() => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  userName.value = user.name.charAt(0).toUpperCase() + user.name.slice(1);
+});
+
 const showInput = () => {
   isInputShow.value = !isInputShow.value;
-  // input.value.focus();
-  // console.log(input.value);
-  // input.value.scrollIntoView(true);
 };
 
 const nameBoard = () => {
-  console.log(boardName.value);
   todosStore.createBoard(boardName.value);
-  isInputShow.value = false;
   boardName.value = "";
 };
 </script>

@@ -1,101 +1,97 @@
 import { defineStore } from "pinia";
+import { v4 as uuidv4 } from "uuid";
+import {
+  addDoc,
+  getDocs,
+  collection,
+  query,
+  where,
+  onSnapshot,
+} from "firebase/firestore";
+import { db } from "@/firebase.config";
+
+const dbRef = collection(db, "todos");
 
 export const useTodosStore = defineStore("todos", {
   state: () => ({
-    todos: [
-      // {
-      //   id: 1,
-      //   name: "one",
-      //   group: "one",
-      //   items: [
-      //     {
-      //       id: 1,
-      //       title: "wedwed",
-      //       descr:
-      //         "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Non asperiores ipsa, laborum aliquam ut ad mollitia ipsam architecto rerum quae similique repellat distinctio obcaecati iusto modi voluptas quod expedita? Nam.",
-      //       create_date: new Date().toLocaleDateString(),
-      //       release_date: "23.05.2023",
-      //     },
-      //     {
-      //       id: 2,
-      //       title: "wedwed",
-      //       descr:
-      //         "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Non asperiores ipsa, laborum aliquam ut ad mollitia ipsam architecto rerum quae similique repellat distinctio obcaecati iusto modi voluptas quod expedita? Nam.",
-      //       create_date: new Date().toLocaleDateString(),
-      //       release_date: "23.05.2023",
-      //     },
-      //     {
-      //       id: 3,
-      //       title: "wedwed",
-      //       descr:
-      //         "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Non asperiores ipsa, laborum aliquam ut ad mollitia ipsam architecto rerum quae similique repellat distinctio obcaecati iusto modi voluptas quod expedita? Nam.",
-      //       create_date: new Date().toLocaleDateString(),
-      //       release_date: "23.05.2023",
-      //     },
-      //     {
-      //       id: 4,
-      //       title: "wedwed",
-      //       descr:
-      //         "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Non asperiores ipsa, laborum aliquam ut ad mollitia ipsam architecto rerum quae similique repellat distinctio obcaecati iusto modi voluptas quod expedita? Nam.",
-      //       create_date: new Date().toLocaleDateString(),
-      //       release_date: "23.05.2023",
-      //     },
-      //     {
-      //       id: 5,
-      //       title: "wedwed",
-      //       descr:
-      //         "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Non asperiores ipsa, laborum aliquam ut ad mollitia ipsam architecto rerum quae similique repellat distinctio obcaecati iusto modi voluptas quod expedita? Nam.",
-      //       create_date: new Date().toLocaleDateString(),
-      //       release_date: "23.05.2023",
-      //     },
-      //     {
-      //       id: 6,
-      //       title: "wedwed",
-      //       descr:
-      //         "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Non asperiores ipsa, laborum aliquam ut ad mollitia ipsam architecto rerum quae similique repellat distinctio obcaecati iusto modi voluptas quod expedita? Nam.",
-      //       create_date: new Date().toLocaleDateString(),
-      //       release_date: "23.05.2023",
-      //     },
-      //   ],
-      // },
-      // {
-      //   id: 2,
-      //   name: "one",
-      //   group: "one",
-      //   items: [
-      //     {
-      //       id: 1,
-      //       title: "wedwed",
-      //       descr:
-      //         "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Non asperiores ipsa, laborum aliquam ut ad mollitia ipsam architecto rerum quae similique repellat distinctio obcaecati iusto modi voluptas quod expedita? Nam.",
-      //       create_date: new Date().toLocaleDateString(),
-      //       release_date: "23.05.2023",
-      //     },
-      //   ],
-      // },
-    ],
+    boards: [],
+    tasks: [],
   }),
   getters: {
     getTodos(state) {
-      return state.todos;
+      return state.boards;
+    },
+    getData(state) {
+      return state.boards.filter((board) => {
+        return Object.assign(board, {
+          items: state.tasks.filter((task) => {
+            return task.progress === board.category;
+          }),
+        });
+      });
     },
   },
 
   actions: {
-    createTask({ column, title, descr }) {
-      const item = this.todos.find((col) => col.id === column);
-      item.items.push({
-        id: 3,
+    async getDataforFirestore() {
+      try {
+        const generalWhere = where(
+          "user_id",
+          "==",
+          JSON.parse(localStorage.getItem("user")).uid,
+        );
+        const queryBoards = query(collection(db, "boards"), generalWhere);
+        const queryTasks = query(collection(db, "tasks"), generalWhere);
+
+        onSnapshot(queryBoards, (querySnapshot) => {
+          const boards = [];
+          querySnapshot.forEach((doc) => {
+            boards.push(doc.data());
+          });
+          console.log(boards);
+          this.boards = boards;
+        });
+        onSnapshot(queryTasks, (querySnapshot) => {
+          const tasks = [];
+          querySnapshot.forEach((doc) => {
+            tasks.push(doc.data());
+          });
+          this.tasks = tasks;
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    /**
+     * Create tasks
+     * @param {Object} formData {comumn, title, descr}
+     */
+    async createTask({ column, title, descr }) {
+      const item = this.boards.find((col) => col.id === column);
+
+      await addDoc(collection(db, "tasks"), {
+        id: uuidv4(),
         title,
         descr,
+        progress: item.category,
+        user_id: JSON.parse(localStorage.getItem("user")).uid,
       });
     },
-    createBoard(name) {
-      this.todos.push({
-        id: 4,
-        name: name,
-        items: [],
-      });
+    /**
+     * Create board
+     * @param {string} name name board
+     */
+    async createBoard(name) {
+      try {
+        const pesponse = await addDoc(collection(db, "boards"), {
+          id: uuidv4(),
+          name,
+          category: name,
+          user_id: JSON.parse(localStorage.getItem("user")).uid,
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 });
