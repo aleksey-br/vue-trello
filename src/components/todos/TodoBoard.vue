@@ -7,39 +7,37 @@
     <div
       class="relative h-full flex flex-col overflow-hidden bg-slate-200/70 hover:bg-slate-200/80 transition">
       <header class="flex justify-between items-center p-4">
-        <span class="text-xl font-medium text-gray-700">{{ colum.name }}</span>
+        <span class="w-full text-xl font-medium text-gray-700">{{
+          colum.name
+        }}</span>
+        <div @click="todosStore.deleteBoard(colum)">
+          <AppIcons
+            class="mr-4 cursor-pointer fill-slate-600 hover:fill-red-600 transition"
+            name="trash"
+            w="30px"
+            h="30px" />
+        </div>
         <DragHandle class="cursor-grabbing">
-          <svg
-            width="30px"
-            height="30px"
-            viewBox="0 0 28 28"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M3 7C3 6.44771 3.44772 6 4 6H24C24.5523 6 25 6.44771 25 7C25 7.55229 24.5523 8 24 8H4C3.44772 8 3 7.55229 3 7Z"
-              fill="#334155" />
-            <path
-              d="M3 14C3 13.4477 3.44772 13 4 13H24C24.5523 13 25 13.4477 25 14C25 14.5523 24.5523 15 24 15H4C3.44772 15 3 14.5523 3 14Z"
-              fill="#334155" />
-            <path
-              d="M4 20C3.44772 20 3 20.4477 3 21C3 21.5523 3.44772 22 4 22H24C24.5523 22 25 21.5523 25 21C25 20.4477 24.5523 20 24 20H4Z"
-              fill="#334155" />
-          </svg>
+          <AppIcons name="burger" />
         </DragHandle>
       </header>
       <SlickList
-        class="board flex flex-col gap-4 transition-all p-4 overflow-y-auto"
+        class="board flex flex-col gap-4 transition-all p-4 overflow-y-auto relative"
         v-model:list="colum.items"
         axis="y"
         group="group"
         tag="div"
+        @sort-insert="todosStore.changeProgress($event, colum)"
         :useWindowAsScrollContainer="false"
+        use-drag-handle
         :transition-duration="500">
-        <TodoCard
-          v-for="(item, i) in colum.items"
-          :key="item.id"
-          :index="i"
-          :item="item" />
+        <TransitionGroup name="list">
+          <TodoCard
+            v-for="(item, i) in colum.items"
+            :key="item.id"
+            :index="i"
+            :item="item" />
+        </TransitionGroup>
       </SlickList>
       <TodoBoardFooter :col="colum.id" />
     </div>
@@ -51,6 +49,7 @@ import { SlickItem, DragHandle, SlickList } from "vue-slicksort";
 import TodoCard from "./TodoCard.vue";
 import TodoBoardFooter from "./TodoBoardFooter.vue";
 import { useTodosStore } from "@/store";
+import AppIcons from "@/components/ui/AppIcons.vue";
 
 const todosStore = useTodosStore();
 </script>
@@ -66,5 +65,28 @@ const todosStore = useTodosStore();
 .board::-webkit-scrollbar-thumb {
   background: #cccccc;
   border-radius: 8px;
+}
+
+/* .slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
+} */
+
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s;
+}
+.list-enter, .list-leave-to /* .list-leave-active до версии 2.1.8 */ {
+  opacity: 0;
+  transform: scale(0.8);
 }
 </style>

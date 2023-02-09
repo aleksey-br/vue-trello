@@ -16,6 +16,7 @@
       id="board-title"
       placeholder="Board name"
       ref="input"
+      @keyup.enter="nameBoard"
       required />
 
     <button
@@ -24,13 +25,14 @@
       Add board
     </button>
   </div>
+
   <SlickList
     v-else
     class="content flex h-full relative items-start overflow-y-hidden overflow-x-auto scroll-touch"
     axis="x"
     lockAxis="x"
     v-model:list="todosStore.boards"
-    @sort-start="todosStore.startDragging"
+    @update:list="todosStore.startDraggingBoard"
     use-drag-handle
     :useWindowAsScrollContainer="false"
     :transition-duration="500">
@@ -67,8 +69,8 @@ const userName = ref("User");
 const isInputShow = ref(false);
 
 onMounted(() => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  userName.value = user.name.charAt(0).toUpperCase() + user.name.slice(1);
+  userName.value =
+    userName.value.charAt(0).toUpperCase() + userName.value.slice(1);
 });
 
 const showInput = () => {

@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
+export let user_uid = null;
 const config = {
   apiKey: process.env.VUE_APP_API_KEY,
   authDomain: "task-d7c0c.firebaseapp.com",
@@ -13,5 +14,6 @@ const config = {
 
 export const firebaseApp = initializeApp(config);
 export const auth = getAuth();
+
 // used for the firestore refs
 export const db = getFirestore(firebaseApp);

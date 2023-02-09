@@ -3,19 +3,17 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  SetUserData,
 } from "firebase/auth";
 import { auth } from "@/firebase.config";
 import router from "@/router";
-import {
-  collection,
-  getDoc,
-  doc,
-  setDoc,
-} from "firebase/firestore";
+import { collection, getDoc, doc, setDoc } from "firebase/firestore";
 import { db } from "@/firebase.config";
 
 export const useAuthStore = defineStore("auth", {
-  state: () => ({}),
+  state: () => ({
+    user: null,
+  }),
   getters: {},
 
   actions: {
@@ -37,15 +35,7 @@ export const useAuthStore = defineStore("auth", {
         });
 
         // Save user info to localstorage
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            uid: response.user.uid,
-            name,
-            token: response.user.accessToken,
-          }),
-        );
-
+        localStorage.setItem("uid", response.user.uid);
         router.push("/");
       } catch (error) {
         console.log(error);
@@ -66,17 +56,9 @@ export const useAuthStore = defineStore("auth", {
         //search for a user in the database
         const user = await getDoc(doc(db, "users", response.user.uid));
 
-        if (user.exists()) {
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              uid: response.user.uid,
-              name: user.data().name,
-              token: response.user.accessToken,
-            }),
-          );
-          router.push("/");
-        }
+        console.log(response.user.uid);
+        localStorage.setItem("uid", response.user.uid);
+        router.push("/");
       } catch (error) {
         console.log(error);
       }

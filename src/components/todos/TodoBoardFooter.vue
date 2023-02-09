@@ -9,7 +9,8 @@
           placeholder="Task one"
           name="title"
           id="title"
-          v-model="formData.title" />
+          v-model="formData.title"
+          required />
         <label class="block font-light text-sm mb-1" for="descr"
           >Description</label
         >
@@ -20,7 +21,8 @@
           placeholder="Hello world"
           cols="30"
           rows="5"
-          v-model="formData.descr">
+          v-model="formData.descr"
+          required>
         </textarea>
       </div>
     </transition>

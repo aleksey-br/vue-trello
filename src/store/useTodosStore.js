@@ -4,13 +4,18 @@ import {
   addDoc,
   getDocs,
   collection,
+  onSnapshot,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
   query,
   where,
-  onSnapshot,
+  deleteDoc,
+  serverTimestamp,
 } from "firebase/firestore";
-import { db } from "@/firebase.config";
-
-const dbRef = collection(db, "todos");
+import { db, auth } from "@/firebase.config";
 
 export const useTodosStore = defineStore("todos", {
   state: () => ({
@@ -18,9 +23,6 @@ export const useTodosStore = defineStore("todos", {
     tasks: [],
   }),
   getters: {
-    getTodos(state) {
-      return state.boards;
-    },
     getData(state) {
       return state.boards.filter((board) => {
         return Object.assign(board, {
@@ -35,22 +37,17 @@ export const useTodosStore = defineStore("todos", {
   actions: {
     async getDataforFirestore() {
       try {
+        onSnapshot(doc(db, "boards", localStorage.getItem("uid")), (doc) => {
+          this.boards = doc.data().boards;
+        });
+
         const generalWhere = where(
           "user_id",
           "==",
-          JSON.parse(localStorage.getItem("user")).uid,
+          localStorage.getItem("uid"),
         );
-        const queryBoards = query(collection(db, "boards"), generalWhere);
         const queryTasks = query(collection(db, "tasks"), generalWhere);
 
-        onSnapshot(queryBoards, (querySnapshot) => {
-          const boards = [];
-          querySnapshot.forEach((doc) => {
-            boards.push(doc.data());
-          });
-          console.log(boards);
-          this.boards = boards;
-        });
         onSnapshot(queryTasks, (querySnapshot) => {
           const tasks = [];
           querySnapshot.forEach((doc) => {
@@ -74,7 +71,8 @@ export const useTodosStore = defineStore("todos", {
         title,
         descr,
         progress: item.category,
-        user_id: JSON.parse(localStorage.getItem("user")).uid,
+        user_id: localStorage.getItem("uid"),
+        timestamp: serverTimestamp(),
       });
     },
     /**
@@ -83,14 +81,130 @@ export const useTodosStore = defineStore("todos", {
      */
     async createBoard(name) {
       try {
-        const pesponse = await addDoc(collection(db, "boards"), {
-          id: uuidv4(),
-          name,
-          category: name,
-          user_id: JSON.parse(localStorage.getItem("user")).uid,
-        });
+        const docSnap = await getDoc(
+          doc(db, "boards", localStorage.getItem("uid")),
+        );
+        if (docSnap.exists()) {
+          const docRef = doc(db, "boards", localStorage.getItem("uid"));
+          await updateDoc(docRef, {
+            boards: arrayUnion({
+              id: uuidv4(),
+              name,
+              category: name,
+            }),
+          });
+        } else {
+          await setDoc(doc(db, "boards", localStorage.getItem("uid")), {
+            boards: [
+              {
+                id: uuidv4(),
+                name,
+                category: name,
+              },
+            ],
+          });
+        }
+
+        // if (docSnap.exists()) {
+        //   await updateDoc(docSnap, {
+        //     boards: arrayUnion({ id: uuidv4(), name, category: name }),
+        //   });
+        // } else {
+        //   console.log("No such document!");
+        // }
+
+        // const pesponse = await addDoc(collection(db, "boards"), {
+        //   id: uuidv4(),
+        //   name,
+        //   category: name,
+        //   "gWHEhOdXEycrdlv5xUj0Ef0JCbk1": JSON.parse(localStorage.getItem("user")).uid,
+        //   timestamp: serverTimestamp(),
+        // });
+        // const boards = await getDocs(collection(db, "boards"));
       } catch (error) {
         console.log(error);
+      }
+    },
+    /**
+     * Change position boards
+     * @param {array} event array boards
+     */
+    async startDraggingBoard(event) {
+      const boardsRef = doc(db, "boards", localStorage.getItem("uid"));
+
+      await updateDoc(boardsRef, {
+        boards: event,
+      });
+    },
+    /**
+     * Update task list
+     * @param {object} item index elem and object task
+     * @param {object} board board
+     */
+    async changeProgress(item, board) {
+      const task = this.tasks.find((task) => task.id === item.value.id);
+      let doc_id = null;
+      const q = query(collection(db, "tasks"), where("id", "==", task.id));
+
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        doc_id = doc.id;
+      });
+
+      const docRef = doc(db, "tasks", doc_id);
+
+      await updateDoc(docRef, {
+        progress: board.category,
+      });
+    },
+
+    async deleteBoard(board) {
+      const docRef = doc(db, "boards", localStorage.getItem("uid"));
+
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const arr = docSnap.data().boards;
+        const indexItem = arr.findIndex((el) => el.id === board.id);
+        if (board.items.length === 0) {
+          arr.splice(indexItem, 1);
+
+          await updateDoc(docRef, {
+            boards: arr,
+          });
+        } else {
+          let deleteDocs = confirm("The board contains tasks. Delete them?");
+          if (deleteDocs) {
+            this.deleteTask(board);
+          }
+        }
+      }
+    },
+    async deleteTask(item) {
+      if (Array.isArray(item.items)) {
+        let queryArr = [];
+        const idArr = item.items.map((el) => el.id);
+        console.log(idArr);
+        const q = query(collection(db, "tasks"), where("id", "in", idArr));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          queryArr.push(doc.id);
+        });
+
+        queryArr.forEach(async (el) => {
+          await deleteDoc(doc(db, "tasks", el));
+        });
+        this.deleteBoard(item);
+      } else {
+        let doc_id = null;
+        const q = query(collection(db, "tasks"), where("id", "==", item.id));
+
+        const docRef = await getDocs(q);
+
+        docRef.forEach((doc) => {
+          doc_id = doc.id;
+        });
+        await deleteDoc(doc(db, "tasks", doc_id));
       }
     },
   },
