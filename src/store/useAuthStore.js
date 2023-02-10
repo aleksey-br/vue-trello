@@ -9,6 +9,7 @@ import { auth } from "@/firebase.config";
 import router from "@/router";
 import { collection, getDoc, doc, setDoc } from "firebase/firestore";
 import { db } from "@/firebase.config";
+import { AppError } from "@/helpers/AppError";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -51,7 +52,7 @@ export const useAuthStore = defineStore("auth", {
 
         // Save user info to localstorage
         localStorage.setItem("uid", response.user.uid);
-
+        console.log(response);
         router.push("/");
       } catch (error) {
         console.log(error);
@@ -74,8 +75,11 @@ export const useAuthStore = defineStore("auth", {
 
         localStorage.setItem("uid", response.user.uid);
         router.push("/");
+
+        console.log(response);
       } catch (error) {
-        console.log(error);
+        console.log(error.code);
+        new AppError(error.code);
       }
     },
     async logout() {

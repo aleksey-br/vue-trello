@@ -104,23 +104,6 @@ export const useTodosStore = defineStore("todos", {
             ],
           });
         }
-
-        // if (docSnap.exists()) {
-        //   await updateDoc(docSnap, {
-        //     boards: arrayUnion({ id: uuidv4(), name, category: name }),
-        //   });
-        // } else {
-        //   console.log("No such document!");
-        // }
-
-        // const pesponse = await addDoc(collection(db, "boards"), {
-        //   id: uuidv4(),
-        //   name,
-        //   category: name,
-        //   "gWHEhOdXEycrdlv5xUj0Ef0JCbk1": JSON.parse(localStorage.getItem("user")).uid,
-        //   timestamp: serverTimestamp(),
-        // });
-        // const boards = await getDocs(collection(db, "boards"));
       } catch (error) {
         console.log(error);
       }

@@ -19,13 +19,13 @@
       @keyup.enter="nameBoard"
       required />
     <span
-      class="invisible peer-invalid:visible text-red-700 font-light text-xs peer-invalid:mb-2">
+      class="invisible peer-invalid:visible text-red-600 font-light text-sm peer-invalid:mb-2">
       Board name not available</span
     >
 
     <button
       @click="nameBoard"
-      class="px-20 py-3 bg-blue-600 rounded-md text-slate-100 font-medium text-md hover:bg-blue-700 transition peer-invalid:opacity-50 peer-invalid:bg-slate-600">
+      class="px-20 py-3 bg-blue-600 rounded-md text-slate-100 font-medium text-md hover:bg-blue-700 transition peer-invalid:opacity-50 peer-invalid:bg-blue-600">
       Add board
     </button>
   </div>
