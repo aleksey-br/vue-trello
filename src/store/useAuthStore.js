@@ -17,6 +17,21 @@ export const useAuthStore = defineStore("auth", {
   getters: {},
 
   actions: {
+    async getUserData() {
+      try {
+        const docRef = doc(db, "users", localStorage.getItem("uid"));
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          this.user = docSnap.data();
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
     /**
      * We get the data object for registration
      * @param {{name: string, email: string, password: string}} formData { name, email, password }
@@ -36,6 +51,7 @@ export const useAuthStore = defineStore("auth", {
 
         // Save user info to localstorage
         localStorage.setItem("uid", response.user.uid);
+
         router.push("/");
       } catch (error) {
         console.log(error);
@@ -56,7 +72,6 @@ export const useAuthStore = defineStore("auth", {
         //search for a user in the database
         const user = await getDoc(doc(db, "users", response.user.uid));
 
-        console.log(response.user.uid);
         localStorage.setItem("uid", response.user.uid);
         router.push("/");
       } catch (error) {

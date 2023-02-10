@@ -4,30 +4,30 @@
       <div class="w-full bg-slate-200/10" v-if="isShowForm">
         <label class="block font-light text-sm mb-1" for="title">Title</label>
         <input
-          class="block w-full py-1 px-2 outline-none text-gray-800 rounded-md mb-4"
+          class="peer mt-1 block w-full px-3 py-2 mb-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 focus:invalid:border-red-500 focus:invalid:ring-red-500"
           type="text"
           placeholder="Task one"
           name="title"
           id="title"
-          v-model="formData.title"
+          v-model.trim="formData.title"
           required />
         <label class="block font-light text-sm mb-1" for="descr"
           >Description</label
         >
         <textarea
-          class="block w-full py-1 px-2 mb-4 outline-none text-gray-800 rounded-md resize-none"
+          class="mt-1 block w-full px-3 py-2 mb-4 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 focus:invalid:border-red-500 focus:invalid:ring-red-500 resize-none"
           name="descr"
           id="descr"
           placeholder="Hello world"
           cols="30"
           rows="5"
-          v-model="formData.descr"
+          v-model.trim="formData.descr"
           required>
         </textarea>
       </div>
     </transition>
     <button
-      class="w-full px-4 py-2 bg-green-600 rounded-md text-center text-stone-50 shadow-md hover:bg-green-700 transition-colors duration-200"
+      class="w-full px-4 py-2 bg-green-600 rounded-md text-center text-stone-50 shadow-md hover:bg-green-700 transition-colors duration-200 outline-none"
       @click="showForm">
       {{ isShowForm ? "Save" : "Add" }}
     </button>
@@ -56,10 +56,11 @@ const showForm = () => {
   isShowForm.value = !isShowForm.value;
 
   if (!isShowForm.value) {
-    todosStore.createTask(formData);
-
-    formData.title = "";
-    formData.descr = "";
+    if (formData.descr && formData.title) {
+      todosStore.createTask(formData);
+      formData.title = "";
+      formData.descr = "";
+    }
   }
 };
 </script>

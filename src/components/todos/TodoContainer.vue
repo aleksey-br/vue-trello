@@ -9,8 +9,8 @@
       It's time for new challenges
     </h3>
     <input
-      class="w-[300px] h-10 outline-none px-2 py-1 rounded-md text-slate-800 font-md mb-4"
-      v-model="boardName"
+      class="peer w-[300px] h-10 outline-none px-2 py-1 mb-2 rounded-md text-slate-800 font-md"
+      v-model.trim="boardName"
       type="text"
       name="title"
       id="board-title"
@@ -18,10 +18,14 @@
       ref="input"
       @keyup.enter="nameBoard"
       required />
+    <span
+      class="invisible peer-invalid:visible text-red-700 font-light text-xs peer-invalid:mb-2">
+      Board name not available</span
+    >
 
     <button
       @click="nameBoard"
-      class="px-20 py-3 bg-blue-700 rounded-md text-slate-100 font-medium text-md hover:bg-slate-800 transition">
+      class="px-20 py-3 bg-blue-600 rounded-md text-slate-100 font-medium text-md hover:bg-blue-700 transition peer-invalid:opacity-50 peer-invalid:bg-slate-600">
       Add board
     </button>
   </div>
@@ -63,14 +67,19 @@ import TodoBoard from "@/components/todos/TodoBoard.vue";
 import { useAuthStore, useTodosStore } from "@/store";
 
 const todosStore = useTodosStore();
+const authStore = useAuthStore();
 const boardName = ref("");
 const input = ref(null);
-const userName = ref("User");
 const isInputShow = ref(false);
 
-onMounted(() => {
-  userName.value =
-    userName.value.charAt(0).toUpperCase() + userName.value.slice(1);
+onMounted(async () => {
+  await authStore.getUserData();
+});
+
+const userName = computed(() => {
+  return (
+    authStore.user?.name.charAt(0).toUpperCase() + authStore.user?.name.slice(1)
+  );
 });
 
 const showInput = () => {
@@ -78,8 +87,10 @@ const showInput = () => {
 };
 
 const nameBoard = () => {
-  todosStore.createBoard(boardName.value);
-  boardName.value = "";
+  if (boardName.value.length !== 0) {
+    todosStore.createBoard(boardName.value);
+    boardName.value = "";
+  }
 };
 </script>
 
