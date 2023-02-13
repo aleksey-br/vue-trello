@@ -34,8 +34,10 @@ export const useAuthStore = defineStore("auth", {
   actions: {
     async getUserData() {
       try {
-        onSnapshot(doc(db, "users", uid), (doc) => {
-          this.user = doc.data();
+        onSnapshot(doc(db, "users", localStorage.getItem("uid")), (doc) => {
+          if (doc.exists()) {
+            this.user = doc.data();
+          }
         });
       } catch (error) {
         console.log(error);

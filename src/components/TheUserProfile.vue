@@ -42,11 +42,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, inject } from "vue";
 import AppIcons from "./ui/AppIcons.vue";
 import { useAuthStore } from "@/store";
 
 const authStore = useAuthStore();
+const vfm = inject("$vfm");
 const userName = ref("user");
 const input = ref(null);
 const bg = ref("");
@@ -69,6 +70,7 @@ const changeName = (e) => {
   if (oldName !== userName.value) {
     authStore.changeName(userName.value);
     isNameChange.value = false;
+    vfm.hide("header-modal");
   }
 };
 </script>

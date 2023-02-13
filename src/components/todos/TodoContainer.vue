@@ -2,9 +2,10 @@
   <div
     v-if="todosStore.boards.length === 0"
     class="w-full h-full flex items-center justify-center flex-col">
-    <h1 class="text-5xl font-bold text-slate-700 mb-3">
+    <h1 v-if="userName" class="text-5xl font-bold text-slate-700 mb-3">
       Hello, {{ userName }} 👋
     </h1>
+    <span v-else class="loader"></span>
     <h3 class="text-3xl font-semibold text-slate-700 mb-5">
       It's time for new challenges
     </h3>
@@ -41,22 +42,6 @@
     :useWindowAsScrollContainer="false"
     :transition-duration="500">
     <TodoBoard />
-    <div
-      class="bg-slate-200/60 hover:bg-slate-200/80 flex flex-shrink-0 px-4 py-2 text-2xl transition rounded-md relative">
-      <input
-        class="w-full outline-none px-2 py-1 rounded-md text-slate-800 font-md"
-        v-model="boardName"
-        type="text"
-        name="title"
-        id="board-title"
-        placeholder="Board name"
-        @keyup.enter="nameBoard"
-        ref="input"
-        v-if="isInputShow" />
-      <button v-if="!isInputShow" @click="showInput">
-        <span>+</span>
-      </button>
-    </div>
   </SlickList>
 </template>
 
@@ -68,12 +53,11 @@ import { useAuthStore, useTodosStore } from "@/store";
 
 const todosStore = useTodosStore();
 const authStore = useAuthStore();
-const boardName = ref("");
+const boardName = ref(null);
 const input = ref(null);
-const isInputShow = ref(false);
 
 onMounted(async () => {
-  authStore.getUserData();
+  await authStore.getUserData();
   todosStore.getDataforFirestore();
 });
 
@@ -82,10 +66,6 @@ const userName = computed(() => {
     authStore.user?.name.charAt(0).toUpperCase() + authStore.user?.name.slice(1)
   );
 });
-
-const showInput = () => {
-  isInputShow.value = !isInputShow.value;
-};
 
 const nameBoard = () => {
   if (boardName.value.length !== 0) {
@@ -110,5 +90,30 @@ const nameBoard = () => {
 .content::-webkit-scrollbar-thumb:hover {
   background: #7c7c7c;
   border-radius: 8px;
+}
+
+.loader {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 32px 0 #fff, -32px 0 #fff;
+  position: relative;
+  animation: flash 0.5s ease-out infinite alternate;
+}
+
+@keyframes flash {
+  0% {
+    background-color: #fff2;
+    box-shadow: 32px 0 #fff2, -32px 0 #fff;
+  }
+  50% {
+    background-color: #fff;
+    box-shadow: 32px 0 #fff2, -32px 0 #fff2;
+  }
+  100% {
+    background-color: #fff2;
+    box-shadow: 32px 0 #fff, -32px 0 #fff2;
+  }
 }
 </style>

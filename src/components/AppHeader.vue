@@ -1,9 +1,13 @@
 <template>
   <header class="h-14 bg-slate-200/80 fixed top-0 left-0 right-0 z-50">
-    <div
-      class="container mx-auto px-4 h-full flex items-center justify-between">
-      <h3 class="text-3xl text-slate-800 font-extrabold">Vuello</h3>
-
+    <div class="container mx-auto px-4 h-full flex items-center">
+      <h3 class="text-3xl text-slate-800 font-extrabold mr-auto">Vuello</h3>
+      <button
+        v-if="todoStore.boards.length"
+        class="px-4 py-2 bg-blue-700 rounded-md text-white text-sm mr-10"
+        @click="handleAddBoard">
+        Add board
+      </button>
       <Popper arrow v-if="user">
         <button class="outline-none">
           <AppIcons class="fill-slate-700" name="settings" w="35px" h="35px" />
@@ -26,16 +30,18 @@
 
 <script setup>
 import { inject } from "vue";
-import { useAuthStore } from "@/store";
+import { useAuthStore, useTodosStore } from "@/store";
 import { useCurrentUser } from "vuefire";
 import Popper from "vue3-popper";
 import AppIcons from "./ui/AppIcons.vue";
+import TodoCreateBoard from "@/components/todos/TodoCreateBoard.vue";
 
 import AppModal from "@/components/AppModal.vue";
 import TheUserProfile from "./TheUserProfile.vue";
 
 const vfm = inject("$vfm");
 const authStore = useAuthStore();
+const todoStore = useTodosStore();
 const user = useCurrentUser();
 
 const showUserProfile = () => {
@@ -47,6 +53,20 @@ const showUserProfile = () => {
     slots: {
       default: {
         component: TheUserProfile,
+      },
+    },
+  });
+};
+
+const handleAddBoard = () => {
+  vfm.show({
+    component: AppModal,
+    bind: {
+      name: "header-create-board",
+    },
+    slots: {
+      default: {
+        component: TodoCreateBoard,
       },
     },
   });
