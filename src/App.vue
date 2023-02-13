@@ -9,10 +9,6 @@ import AppHeader from "./components/AppHeader.vue";
 import { useTodosStore } from "./store";
 
 const todosStore = useTodosStore();
-
-onMounted(() => {
-  todosStore.getDataforFirestore();
-});
 </script>
 
 <style></style>

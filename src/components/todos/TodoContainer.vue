@@ -33,8 +33,8 @@
   <SlickList
     v-else
     class="content flex h-full relative items-start overflow-y-hidden overflow-x-auto scroll-touch"
-    axis="x"
-    lockAxis="x"
+    axis="xy"
+    lockAxis="xy"
     v-model:list="todosStore.boards"
     @update:list="todosStore.startDraggingBoard"
     use-drag-handle
@@ -73,7 +73,8 @@ const input = ref(null);
 const isInputShow = ref(false);
 
 onMounted(async () => {
-  await authStore.getUserData();
+  authStore.getUserData();
+  todosStore.getDataforFirestore();
 });
 
 const userName = computed(() => {

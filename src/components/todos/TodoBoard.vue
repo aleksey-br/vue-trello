@@ -1,6 +1,6 @@
 <template>
   <SlickItem
-    class="w-[380px] max-h-[640px] h-min flex flex-shrink-0 flex-col mr-4 last:mr-0 shadow-md rounded-md scroll-touch"
+    class="max-w-[380px] min-w-[260px] w-full max-h-[640px] h-min flex flex-shrink-0 flex-col mr-4 last:mr-0 shadow-md rounded-md scroll-touch"
     v-for="(colum, i) in todosStore.getData"
     :key="colum.id"
     :index="i">
@@ -18,13 +18,13 @@
             h="30px" />
         </div>
         <DragHandle class="cursor-grabbing">
-          <AppIcons name="burger" />
+          <AppIcons name="burger" w="30px" h="30px" />
         </DragHandle>
       </header>
       <SlickList
         class="board flex flex-col gap-4 transition-all p-4 overflow-y-auto relative"
         v-model:list="colum.items"
-        axis="y"
+        axis="xy"
         group="group"
         tag="div"
         @sort-insert="todosStore.changeProgress($event, colum)"

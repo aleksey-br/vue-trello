@@ -16,6 +16,9 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db, auth } from "@/firebase.config";
+import { useCollection, useDocument, useFirestore } from "vuefire";
+
+const uid = localStorage.getItem("uid") || null;
 
 export const useTodosStore = defineStore("todos", {
   state: () => ({
@@ -37,9 +40,12 @@ export const useTodosStore = defineStore("todos", {
   actions: {
     async getDataforFirestore() {
       try {
+        console.log("start");
         onSnapshot(doc(db, "boards", localStorage.getItem("uid")), (doc) => {
           this.boards = doc.data().boards;
         });
+
+        console.log(uid);
 
         const generalWhere = where(
           "user_id",

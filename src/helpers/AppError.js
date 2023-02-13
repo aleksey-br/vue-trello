@@ -9,9 +9,8 @@ export class AppError {
     { code: "auth/user-not-found", msg: "User not found" },
     { code: "auth/internal-error", msg: "Unexpected error" },
   ];
-  constructor(msg) {
-    this.error = msg;
-    this.msg = msg;
+  constructor(error) {
+    this.error = error;
     if (this.error) {
       this.errorMsg();
     }
@@ -19,7 +18,6 @@ export class AppError {
 
   errorMsg() {
     const err = this.optopns.find((el) => el.code === this.error);
-    console.log(err);
     return toast.error(err.msg);
   }
 }

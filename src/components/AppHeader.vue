@@ -1,26 +1,22 @@
 <template>
-  <header class="h-14 bg-slate-200/80 fixed top-0 left-0 right-0">
+  <header class="h-14 bg-slate-200/80 fixed top-0 left-0 right-0 z-50">
     <div
       class="container mx-auto px-4 h-full flex items-center justify-between">
       <h3 class="text-3xl text-slate-800 font-extrabold">Vuello</h3>
-      <!-- <button
-        v-if="user"
-        class="px-6 py-2 bg-blue-700 rounded-md text-slate-100 outline-none"
-        @click="authStore.logout">
-        Sing Out
-      </button> -->
+
       <Popper arrow v-if="user">
         <button class="outline-none">
-          <AppIcons name="settings" w="35px" h="35px" />
+          <AppIcons class="fill-slate-700" name="settings" w="35px" h="35px" />
         </button>
-        <template #content="{ close }">
+        <template #content="{}">
           <div class="bg-white p-4 rounded-md">
-            <button
-              class="px-6 py-2 bg-blue-700 rounded-md text-slate-100 outline-none"
-              @click="authStore.logout">
-              Sing Out
+            <button class="flex gap-2 text-slate-700" >
+              <span><AppIcons name="user" w="20px" h="20px" /></span> Profile
             </button>
-            <button @click="close">Close</button>
+            <button class="flex gap-2 text-slate-700" @click="authStore.logout">
+              <span><AppIcons name="singOut" w="20px" h="20px" /></span> Sing
+              Out
+            </button>
           </div>
         </template>
       </Popper>

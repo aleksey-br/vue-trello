@@ -75,17 +75,14 @@ export const useAuthStore = defineStore("auth", {
 
         localStorage.setItem("uid", response.user.uid);
         router.push("/");
-
-        console.log(response);
       } catch (error) {
-        console.log(error.code);
         new AppError(error.code);
       }
     },
     async logout() {
       try {
         const out = await signOut(auth);
-        localStorage.removeItem("user");
+        localStorage.removeItem("uid");
         window.location.reload();
       } catch (error) {
         console.log(error);
