@@ -10,7 +10,7 @@
         </button>
         <template #content="{}">
           <div class="bg-white p-4 rounded-md">
-            <button class="flex gap-2 text-slate-700" >
+            <button class="flex gap-2 text-slate-700" @click="showUserProfile">
               <span><AppIcons name="user" w="20px" h="20px" /></span> Profile
             </button>
             <button class="flex gap-2 text-slate-700" @click="authStore.logout">
@@ -25,13 +25,32 @@
 </template>
 
 <script setup>
+import { inject } from "vue";
 import { useAuthStore } from "@/store";
 import { useCurrentUser } from "vuefire";
 import Popper from "vue3-popper";
 import AppIcons from "./ui/AppIcons.vue";
 
+import AppModal from "@/components/AppModal.vue";
+import TheUserProfile from "./TheUserProfile.vue";
+
+const vfm = inject("$vfm");
 const authStore = useAuthStore();
 const user = useCurrentUser();
+
+const showUserProfile = () => {
+  vfm.show({
+    component: AppModal,
+    bind: {
+      name: "header-modal",
+    },
+    slots: {
+      default: {
+        component: TheUserProfile,
+      },
+    },
+  });
+};
 </script>
 
 <style lang="scss" scoped></style>

@@ -3,32 +3,40 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  SetUserData,
 } from "firebase/auth";
 import { auth } from "@/firebase.config";
 import router from "@/router";
-import { collection, getDoc, doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  getDoc,
+  doc,
+  setDoc,
+  updateDoc,
+  onSnapshot,
+} from "firebase/firestore";
 import { db } from "@/firebase.config";
 import { AppError } from "@/helpers/AppError";
+
+const uid = localStorage.getItem("uid") || null;
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     user: null,
   }),
-  getters: {},
+  getters: {
+    getUserName(state) {
+      return (
+        state.user?.name.charAt(0).toUpperCase() + state.user?.name.slice(1)
+      );
+    },
+  },
 
   actions: {
     async getUserData() {
       try {
-        const docRef = doc(db, "users", localStorage.getItem("uid"));
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          this.user = docSnap.data();
-        } else {
-          // doc.data() will be undefined in this case
-          console.log("No such document!");
-        }
+        onSnapshot(doc(db, "users", uid), (doc) => {
+          this.user = doc.data();
+        });
       } catch (error) {
         console.log(error);
       }
@@ -46,9 +54,14 @@ export const useAuthStore = defineStore("auth", {
         );
 
         // Add user to database
-        await setDoc(doc(collection(db, "users"), response.user.uid), {
-          name,
-        });
+        const name = await setDoc(
+          doc(collection(db, "users"), response.user.uid),
+          {
+            name,
+          },
+        );
+
+        console.log(name);
 
         // Save user info to localstorage
         localStorage.setItem("uid", response.user.uid);
@@ -73,7 +86,10 @@ export const useAuthStore = defineStore("auth", {
         //search for a user in the database
         const user = await getDoc(doc(db, "users", response.user.uid));
 
+        console.log(user.data());
+
         localStorage.setItem("uid", response.user.uid);
+        localStorage.setItem("name", user.data().name);
         router.push("/");
       } catch (error) {
         new AppError(error.code);
@@ -87,6 +103,14 @@ export const useAuthStore = defineStore("auth", {
       } catch (error) {
         console.log(error);
       }
+    },
+
+    async changeName(name) {
+      const userRef = doc(db, "users", uid);
+
+      await updateDoc(userRef, {
+        name: name,
+      });
     },
   },
 });

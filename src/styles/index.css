@@ -11,3 +11,17 @@
   -webkit-overflow-scrolling: touch; /* Lets it scroll lazy */
   scroll-snap-type: x mandatory;
 }
+
+.modal-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  max-width: 480px;
+  flex: 1;
+  margin: 0 10px;
+  padding: 10px;
+  background: $block-color;
+  border-radius: 5px;
+}

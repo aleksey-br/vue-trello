@@ -4,6 +4,7 @@ import { VueFire, VueFireAuth } from "vuefire";
 import router from "./router";
 import Popper from "vue3-popper";
 import { plugin as Slicksort } from "vue-slicksort";
+import { vfmPlugin } from "vue-final-modal";
 import Toast from "vue-toastification";
 // Import the CSS or use your own!
 import "vue-toastification/dist/index.css";
@@ -28,6 +29,12 @@ app.use(VueFire, {
 });
 app.use(router);
 app.use(pinia);
+app.use(
+  vfmPlugin({
+    key: "$vfm",
+    componentName: "vueModal",
+  }),
+);
 app.use(Toast, toastOptions);
 app.use(Slicksort);
 app.component("popper-app", Popper);
