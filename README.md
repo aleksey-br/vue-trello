@@ -2,8 +2,6 @@
 
 ![main screen](screenshot.png)
 
-Vuello -
-
 #
 
 ## [Live demo](http://example.com/)
