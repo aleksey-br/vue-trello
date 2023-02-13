@@ -82,12 +82,9 @@ export const useAuthStore = defineStore("auth", {
         );
 
         //search for a user in the database
-        const user = await getDoc(doc(db, "users", response.user.uid));
-
-        console.log(user.data());
+        await getDoc(doc(db, "users", response.user.uid));
 
         localStorage.setItem("uid", response.user.uid);
-        localStorage.setItem("name", user.data().name);
         router.push("/");
       } catch (error) {
         new AppError(error.code);

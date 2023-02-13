@@ -1,24 +1,51 @@
-# vue-task
+# VUELLO
 
-## Project setup
+![main screen](screenshot.png)
+
+Vuello -
+
+#
+
+## [Live demo](http://example.com/)
+
+- email: user@mail.ru
+- password: qwerty
+
+#
+
+## Technologies
+
+- Vue 3
+- Tailwind
+- Pinia
+- Firebase (Auth, Firestore)
+
+#
+
+# Usage
+
+## Clone project
+
+```
+git clone https://github.com/aleksey-br/vue-trello
+
+cd vue-trello
+```
+
+### Installing dependencies
+
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Start project
+
 ```
 npm run serve
 ```
 
 ### Compiles and minifies for production
+
 ```
 npm run build
 ```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

@@ -29,11 +29,7 @@ router.beforeEach(async (to) => {
     if (!currentUser) {
       return {
         path: "/auth",
-        query: {
-          // we keep the current path in the query so we can redirect to it after login
-          // with `router.push(route.query.redirectTo || '/')`
-          // redirectTo: to.fullPath,
-        },
+        query: {},
       };
     }
   }
