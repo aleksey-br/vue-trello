@@ -56,18 +56,14 @@ export const useAuthStore = defineStore("auth", {
         );
 
         // Add user to database
-        const name = await setDoc(
-          doc(collection(db, "users"), response.user.uid),
-          {
-            name,
-          },
-        );
+        await setDoc(doc(db, "users", response.user.uid), {
+          name,
+        });
 
         console.log(name);
 
         // Save user info to localstorage
         localStorage.setItem("uid", response.user.uid);
-        console.log(response);
         router.push("/");
       } catch (error) {
         console.log(error);
