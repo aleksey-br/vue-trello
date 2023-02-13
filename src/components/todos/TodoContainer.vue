@@ -2,11 +2,13 @@
   <div
     v-if="todosStore.boards.length === 0"
     class="w-full h-full flex items-center justify-center flex-col">
-    <h1 v-if="userName" class="text-5xl font-bold text-slate-700 mb-3">
+    <h1
+      v-if="userName"
+      class="lg:text-5xl md:text-4xl text-3xl font-bold text-slate-700 mb-3">
       Hello, {{ userName }} 👋
     </h1>
     <span v-else class="loader"></span>
-    <h3 class="text-3xl font-semibold text-slate-700 mb-5">
+    <h3 class="md:text-3xl text-lg font-semibold text-slate-700 mb-5">
       It's time for new challenges
     </h3>
     <input
