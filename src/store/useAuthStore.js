@@ -4,8 +4,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { auth } from "@/firebase.config";
-import { getCurrentUser } from "vuefire";
+import { auth, db } from "@/firebase.config";
 import router from "@/router";
 import {
   collection,
@@ -15,10 +14,8 @@ import {
   updateDoc,
   onSnapshot,
 } from "firebase/firestore";
-import { db } from "@/firebase.config";
+import { getCurrentUser } from "vuefire";
 import { AppError } from "@/helpers/AppError";
-
-const uid = localStorage.getItem("uid") || null;
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -35,8 +32,9 @@ export const useAuthStore = defineStore("auth", {
   actions: {
     async getUserData() {
       try {
-        onSnapshot(doc(db, "users", uid), (doc) => {
-          this.user = doc.data();
+        const user = await getCurrentUser();
+        onSnapshot(doc(db, "users", user.uid), (doc) => {
+          this.user = doc.data() || [];
         });
       } catch (error) {
         console.log(error);
@@ -55,18 +53,14 @@ export const useAuthStore = defineStore("auth", {
         );
 
         // Add user to database
-        const name = await setDoc(
-          doc(collection(db, "users"), response.user.uid),
-          {
-            name,
-          },
-        );
+        await setDoc(doc(collection(db, "users"), response.user.uid), {
+          name: name,
+        });
 
         await setDoc(doc(db, "boards", response.user.uid), {});
 
         // Save user info to localstorage
         localStorage.setItem("uid", response.user.uid);
-        console.log(response);
         router.push("/");
       } catch (error) {
         console.log(error);
@@ -85,7 +79,7 @@ export const useAuthStore = defineStore("auth", {
         );
 
         //search for a user in the database
-        const user = await getDoc(doc(db, "users", response.user.uid));
+        await getDoc(doc(db, "users", response.user.uid));
 
         localStorage.setItem("uid", response.user.uid);
         router.push("/");
@@ -104,7 +98,8 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async changeName(name) {
-      const userRef = doc(db, "users", uid);
+      const user = await getCurrentUser();
+      const userRef = doc(db, "users", user.uid);
 
       await updateDoc(userRef, {
         name: name,

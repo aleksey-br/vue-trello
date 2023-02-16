@@ -18,8 +18,6 @@ import {
 import { db, auth } from "@/firebase.config";
 import { getCurrentUser } from "vuefire";
 
-const uid = localStorage.getItem("uid") || null;
-
 export const useTodosStore = defineStore("todos", {
   state: () => ({
     boards: [],
