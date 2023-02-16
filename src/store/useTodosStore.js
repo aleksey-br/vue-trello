@@ -16,9 +16,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db, auth } from "@/firebase.config";
-import { useCollection, useDocument, useFirestore } from "vuefire";
-
-const uid = localStorage.getItem("uid") || null;
+import { getCurrentUser } from "vuefire";
 
 export const useTodosStore = defineStore("todos", {
   state: () => ({
@@ -40,18 +38,12 @@ export const useTodosStore = defineStore("todos", {
   actions: {
     async getDataforFirestore() {
       try {
-        console.log("start");
-        onSnapshot(doc(db, "boards", localStorage.getItem("uid")), (doc) => {
-          this.boards = doc.data().boards;
+        const user = await getCurrentUser();
+        onSnapshot(doc(db, "boards", user.uid), (doc) => {
+          this.boards = doc.data().boards || [];
         });
 
-        console.log(uid);
-
-        const generalWhere = where(
-          "user_id",
-          "==",
-          localStorage.getItem("uid"),
-        );
+        const generalWhere = where("user_id", "==", user.uid);
         const queryTasks = query(collection(db, "tasks"), generalWhere);
 
         onSnapshot(queryTasks, (querySnapshot) => {
@@ -87,11 +79,10 @@ export const useTodosStore = defineStore("todos", {
      */
     async createBoard(name) {
       try {
-        const docSnap = await getDoc(
-          doc(db, "boards", localStorage.getItem("uid")),
-        );
+        const user = await getCurrentUser();
+        const docSnap = await getDoc(doc(db, "boards", user.uid));
         if (docSnap.exists()) {
-          const docRef = doc(db, "boards", localStorage.getItem("uid"));
+          const docRef = doc(db, "boards", user.uid);
           await updateDoc(docRef, {
             boards: arrayUnion({
               id: uuidv4(),
@@ -100,7 +91,7 @@ export const useTodosStore = defineStore("todos", {
             }),
           });
         } else {
-          await setDoc(doc(db, "boards", localStorage.getItem("uid")), {
+          await setDoc(doc(db, "boards", user.uid), {
             boards: [
               {
                 id: uuidv4(),
@@ -119,7 +110,8 @@ export const useTodosStore = defineStore("todos", {
      * @param {array} event array boards
      */
     async startDraggingBoard(event) {
-      const boardsRef = doc(db, "boards", localStorage.getItem("uid"));
+      const user = await getCurrentUser();
+      const boardsRef = doc(db, "boards", user.uid);
 
       await updateDoc(boardsRef, {
         boards: event,
@@ -148,7 +140,8 @@ export const useTodosStore = defineStore("todos", {
     },
 
     async deleteBoard(board) {
-      const docRef = doc(db, "boards", localStorage.getItem("uid"));
+      const user = await getCurrentUser();
+      const docRef = doc(db, "boards", user.uid);
 
       const docSnap = await getDoc(docRef);
 
