@@ -5,6 +5,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { auth } from "@/firebase.config";
+import { getCurrentUser } from "vuefire";
 import router from "@/router";
 import {
   collection,
@@ -34,10 +35,8 @@ export const useAuthStore = defineStore("auth", {
   actions: {
     async getUserData() {
       try {
-        onSnapshot(doc(db, "users", localStorage.getItem("uid")), (doc) => {
-          if (doc.exists()) {
-            this.user = doc.data();
-          }
+        onSnapshot(doc(db, "users", uid), (doc) => {
+          this.user = doc.data();
         });
       } catch (error) {
         console.log(error);
@@ -56,14 +55,18 @@ export const useAuthStore = defineStore("auth", {
         );
 
         // Add user to database
-        await setDoc(doc(db, "users", response.user.uid), {
-          name,
-        });
+        const name = await setDoc(
+          doc(collection(db, "users"), response.user.uid),
+          {
+            name,
+          },
+        );
 
-        console.log(name);
+        await setDoc(doc(db, "boards", response.user.uid), {});
 
         // Save user info to localstorage
         localStorage.setItem("uid", response.user.uid);
+        console.log(response);
         router.push("/");
       } catch (error) {
         console.log(error);
@@ -84,10 +87,7 @@ export const useAuthStore = defineStore("auth", {
         //search for a user in the database
         const user = await getDoc(doc(db, "users", response.user.uid));
 
-        console.log(user.data());
-
         localStorage.setItem("uid", response.user.uid);
-        localStorage.setItem("name", user.data().name);
         router.push("/");
       } catch (error) {
         new AppError(error.code);
