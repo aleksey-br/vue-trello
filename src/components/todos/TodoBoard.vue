@@ -1,6 +1,6 @@
 <template>
   <SlickItem
-    class="max-w-[380px] min-w-[260px] w-full max-h-[640px] h-min flex flex-shrink-0 flex-col mr-4 last:mr-0 shadow-md rounded-md scroll-touch"
+    class="max-w-[380px] min-w-[260px] w-full xl:max-h-[640px] max-h-[480px] h-min flex flex-shrink-0 flex-col mr-4 last:mr-0 shadow-md rounded-md scroll-touch"
     v-for="(colum, i) in todosStore.getData"
     :key="colum.id"
     :index="i">
